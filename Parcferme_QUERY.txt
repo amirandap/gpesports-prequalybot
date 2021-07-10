@@ -1,0 +1,29 @@
+SELECT 
+vn2pj_tracks_rounds.name as 'Pista',
+vn2pj_tracks_events.start_date,
+vn2pj_tracks_competitions.discord_id as 'Discord Channel ID', 
+vn2pj_tracks_competitions.name as 'Competition',
+vn2pj_tracks_projects_rounds.project_id,
+vn2pj_tracks_projects.name as 'Category',
+vn2pj_tracks_individuals.nickname,
+vn2pj_fields_values.value as 'Discord_User_ID',
+vn2pj_tracks_individuals.user_id,
+parc_ferme.Youtube1
+
+FROM vn2pj_tracks_events_results
+INNER JOIN vn2pj_tracks_events on vn2pj_tracks_events.id=vn2pj_tracks_events_results.event_id
+INNER JOIN vn2pj_tracks_projects_rounds on vn2pj_tracks_projects_rounds.id=vn2pj_tracks_events.projectround_id
+INNER join vn2pj_tracks_rounds on vn2pj_tracks_rounds.id=vn2pj_tracks_projects_rounds.round_id
+inner join vn2pj_tracks_individuals on vn2pj_tracks_individuals.id=vn2pj_tracks_events_results.individual_id
+INNER JOIN vn2pj_tracks_projects ON vn2pj_tracks_projects.id=vn2pj_tracks_projects_rounds.project_id
+INNER JOIN vn2pj_tracks_competitions on vn2pj_tracks_projects.competition_id=vn2pj_tracks_competitions.id
+LEFT JOIN vn2pj_fields_values on vn2pj_fields_values.item_id=vn2pj_tracks_individuals.user_id
+and field_id=13
+
+LEFT JOIN parc_ferme 
+ON parc_ferme.Categoria=vn2pj_tracks_projects.name 
+AND vn2pj_tracks_individuals.user_id=parc_ferme.joomla_id
+AND parc_ferme.Pista=vn2pj_tracks_rounds.name
+
+where vn2pj_tracks_events.type=3  and ((abs(DATEDIFF(vn2pj_tracks_events.start_date, CURRENT_TIMESTAMP)))<5)  AND parc_ferme.Youtube1 is null
+ORDER BY vn2pj_tracks_projects.name ASC

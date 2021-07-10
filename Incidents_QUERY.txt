@@ -1,0 +1,15 @@
+SELECT `incidentes`.`Fecha`, 
+`incidentes`.`Categoria`, 
+`incidentes`.`Pista`, 
+`incidentes`.`Incidente`, 
+`incidentes`.`Lap`, 
+`incidentes`.`Reportado`, 
+`incidentes`.`Afectado`, 
+`incidentes`.`Resolucion` , 
+`vn2pj_tracks_competitions`.`discord_id` as 'CHANNELID', 
+datediff(Fecha,CURRENT_TIMESTAMP) 
+FROM `incidentes` inner join vn2pj_tracks_projects on incidentes.Categoria=vn2pj_tracks_projects.name 
+inner join vn2pj_tracks_competitions on 
+vn2pj_tracks_projects.competition_id=vn2pj_tracks_competitions.id 
+where datediff(Fecha,CURRENT_TIMESTAMP) between -6 and 7 
+ORDER BY `incidentes`.`Categoria` ASC
