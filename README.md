@@ -5,9 +5,9 @@ Bot for reading mysql
 Prequali:
 ===============================
 1. Automatically publish 24 hours before race and send DM
-2. $prequali ($check)
-3. $prequali -final ($manual)
-4. $prequali -setrole @gp3-quali
+2. $prequali ($check): returns list of current timetrial submissions for this week
+3. $prequali -final ($manual): publish prequali list and assigns role
+4. $prequali -setrole @gp3-quali: defines the role to assign to prequali submissions
 5. $prequali -setchannel
 6. $prequali -remind (publish list of all users to remind)
 7. $prequali -reminddm (sends reminder to all users in the list)
