@@ -34,10 +34,10 @@ async def on_ready():
         pass
     
     # COMMENTED OUT FOR TESTING PURPOSES, ENABLE THESE WHEN YOU ARE GOING FOR LIVE
-    #fetch_role_data.start()
-    #fetch_dm_data.start()
-    #uptime_calc.start()
-    #send_reminders.start()
+    fetch_role_data.start()
+    fetch_dm_data.start()
+    uptime_calc.start()
+    send_reminders.start()
 
 running = 'TRUE'
 
@@ -229,7 +229,7 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
                     track_name = tables['Pista']
                     tiempo = tables['TIEMPO']
                     msg += f"**{num}:** {user.mention}\n> **TIEMPO**: {tiempo}\n\n" 
-                    await user.send(f"Congratulations you have secured a spot in `{track_name}` race tomorrow, you have been assigned `{role}`")
+                    await user.send(f"Felicidades, has clasificado para la carrera de `{track_name}`, hemos asignado el role `{role}`")
                     num += 1
                     total_entries += 1
                     Last_Role = roles
