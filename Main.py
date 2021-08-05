@@ -82,7 +82,7 @@ async def uptime_calc():
 @commands.has_permissions(administrator = True)
 @bot.command()
 async def incidentes(ctx):
-    with open('Settings.json','r') as f:
+    with open('Creds.json','r') as f:
         data = json.load(f)
     host = data['Host']
     user = data['User']
@@ -153,7 +153,7 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
     global Start_Date_Temp_F
     global total_entries
 
-    with open('Settings.json') as f:
+    with open('Creds.json') as f:
         data = json.load(f)
        
     
@@ -172,6 +172,9 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
         cur.execute(query_)
         msg = ''
         num = 1
+        with open('Settings.json') as f:
+            data = json.load(f)
+
         for tables in cur.fetchall():
             print('here')         
             user = int(tables['DISCORDID'])
@@ -196,9 +199,9 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
         if val == '-final':
 
             with open('Settings.json') as f:
-                data = json.load(f)
+                dta = json.load(f)
             
-            if not 'Role' in data:
+            if not 'Prequali_Role' in dta:
                 await ctx.send(":warning: Please set the role with $setrole command")
                 return
 
@@ -214,7 +217,9 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
             cur.execute(query_)
             msg = ''
             num = 1
-        
+            with open('Settings.json') as f:
+                data = json.load(f)
+
             for tables in cur.fetchall():      
         
                 user = int(tables['DISCORDID'])
@@ -247,6 +252,8 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
 
     
         elif val == '-setchannel':
+            with open('Settings.json') as f:
+                data = json.load(f)
             if channel == None:
                 await ctx.send('Usage: $prequali -setchannel #channel')
                 return
@@ -257,9 +264,6 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
                     json.dump(data,f,indent = 3)
         
         elif val == '-remind':
-            with open('Settings.json') as f:
-                data = json.load(f)
-
             host = data['Host']
             user = data['User']
             pass_ = data['Password']
@@ -275,7 +279,8 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
             
             cur = conn.cursor(pymysql.cursors.DictCursor)
             cur.execute(query1)
-
+            with open('Settings.json') as f:
+                    data = json.load(f)
             for tables in cur.fetchall():      
 
                 user = int(tables['DISCORDID'])
@@ -299,8 +304,6 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
             conn.close()
         
         elif val == '-reminddm':
-            with open('Settings.json') as f:
-                data = json.load(f)
 
             host = data['Host']
             user = data['User']
@@ -317,6 +320,8 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
             
             cur = conn.cursor(pymysql.cursors.DictCursor)
             cur.execute(query1)
+            with open('Settings.json') as f:
+                data = json.load(f)
 
             for tables in cur.fetchall():      
                 try:
@@ -360,10 +365,13 @@ async def cleanroles(ctx):
     await ctx.message.delete()
     global total_entries
 
-    with open('Settings.json') as f:
+    with open('Creds.json') as f:
         data = json.load(f)
 
-    if not 'Prequali_Role' in data:
+    with open('Settings.json') as f:
+        dta = json.load(f)
+
+    if not 'Prequali_Role' in dta:
         await ctx.send(":warning: Please set the role with $setrole command")
         return
 
@@ -378,14 +386,15 @@ async def cleanroles(ctx):
     cur = conn.cursor(pymysql.cursors.DictCursor)
     cur.execute(query_)
     num = 1
- 
+
+
     for tables in cur.fetchall():      
  
         user = int(tables['DISCORDID'])
 
         try:
             user = ctx.channel.guild.get_member(int(user))
-            role = discord.utils.get(ctx.channel.guild.roles,name = data['Prequali_Role'])
+            role = discord.utils.get(ctx.channel.guild.roles,name = dta['Prequali_Role'])
             if not role in user.roles:
                 continue
             await user.remove_roles(role)
@@ -394,7 +403,7 @@ async def cleanroles(ctx):
         except Exception as e:
      
             error = traceback.print_exc()
-            channel = await bot.fetch_channel(data['Backend_Channel'])
+            channel = await bot.fetch_channel(dta['Backend_Channel'])
             await channel.send(error)
             continue
 
@@ -414,12 +423,15 @@ async def fetch_role_data():
     global total_entries
 
     with open('Settings.json') as f:
-        data = json.load(f)
+        dta = json.load(f)
 
-    if not 'Role' in data:
+    if not 'Prequali_Role' in dta:
         channel = await bot.fetch_channel(data['Backend_Channel'])
         await channel.send(":warning: Please set the role with $setrole command")
         return
+
+    with open('Creds.json') as f:
+        data = json.load(f)
 
     host = data['Host']
     user = data['User']
@@ -450,21 +462,21 @@ async def fetch_role_data():
     msg = ''
     msg2 = ''
     num = 1
-    if hours_ == int(data['Prequali_Assign_Hours']):
+    if hours_ == int(dta['Prequali_Assign_Hours']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
         cur.execute(query_)
         for tables in cur.fetchall():      
             user = int(tables['DISCORDID'])
-            channel = await bot.fetch_channel(data['Role_Channel'])
+            channel = await bot.fetch_channel(dta['Role_Channel'])
 
             try:
                 print(user)
                 print(channel)
                 user = channel.guild.get_member(int(user))
                 print(user)
-                role = discord.utils.get(channel.guild.roles,name = data['Prequali_Role'])
+                role = discord.utils.get(channel.guild.roles,name = dta['Prequali_Role'])
                 if role in user.roles:
                     continue
                 await user.add_roles(role)
@@ -477,24 +489,24 @@ async def fetch_role_data():
 
             except Exception as e:
                 error = traceback.print_exc()
-                channel = await bot.fetch_channel(data['Backend_Channel'])
+                channel = await bot.fetch_channel(dta['Backend_Channel'])
                 await channel.send(error)
                 continue
 
         
         conn.close()
         
-    elif hours_ == int(data['Prequali_Remove_Hours']):
+    elif hours_ == int(dta['Prequali_Remove_Hours']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
         cur.execute(query_)
         for tables in cur.fetchall():
             user = int(tables['DISCORDID'])
-            channel = await bot.fetch_channel(data['Role_Channel'])
+            channel = await bot.fetch_channel(dta['Role_Channel'])
             try:
                 user = channel.guild.get_member(int(user))
-                role = discord.utils.get(channel.guild.roles,name = data['Prequali_Role'])
+                role = discord.utils.get(channel.guild.roles,name = dta['Prequali_Role'])
                 if not role in user.roles:
                     continue
                 await user.remove_roles(role)
@@ -503,7 +515,7 @@ async def fetch_role_data():
 
             except Exception as e:
                 error = traceback.print_exc()
-                channel = await bot.fetch_channel(data['Backend_Channel'])
+                channel = await bot.fetch_channel(dta['Backend_Channel'])
                 await channel.send(error)
                 continue
  
@@ -514,14 +526,14 @@ async def fetch_role_data():
         return
             
     if not msg == '':
-        channel = await bot.fetch_channel(data['Role_Channel'])
+        channel = await bot.fetch_channel(dta['Role_Channel'])
         embed = discord.Embed(color = discord.Color.green(),title = f'TOP Fastest Users {track_name}',description = msg)
         await channel.send(embed = embed)
         Start_Date_Temp = ''
         return Start_Date_Temp
     
     if not msg2 == '':
-        channel = await bot.fetch_channel(data['Role_Channel'])
+        channel = await bot.fetch_channel(dta['Role_Channel'])
         embed = discord.Embed(color = discord.Color.green(),title = f'Roles Removed | {track_name}',description = msg2)
         await channel.send(embed = embed)
         Start_Date_Temp = ''
@@ -538,7 +550,12 @@ async def parcferme(ctx,val:str = None):
     global total_entries
 
     with open('Settings.json') as f:
+        dta = json.load(f)
+
+    with open('Creds.json') as f:
         data = json.load(f)
+
+
     host = data['Host']
     user = data['User']
     pass_ = data['Password']
@@ -569,7 +586,7 @@ async def parcferme(ctx,val:str = None):
 
         try:
             user_id = int(tables['Discord_User_ID'])
-            if user_id in data['Ignored_Users']:
+            if user_id in dta['Ignored_Users']:
                 continue
             user = await bot.fetch_user(int(tables['Discord_User_ID']))
             if old_channel == channel.id:
@@ -621,7 +638,7 @@ async def parcferme(ctx,val:str = None):
 
     conn.close()
     if not users_without_ID == '':
-        channel = await bot.fetch_channel(data['Backend_Channel'])
+        channel = await bot.fetch_channel(dta['Backend_Channel'])
         embed = discord.Embed(color = discord.Color.red(),title = f'Parcferme | Users without USERID',description =users_without_ID)
         await channel.send(embed = embed)
 
@@ -631,7 +648,12 @@ async def fetch_dm_data():
     global total_entries
 
     with open('Settings.json') as f:
+        dta = json.load(f)
+
+    with open('Creds.json') as f:
         data = json.load(f)
+
+
     host = data['Host']
     user = data['User']
     pass_ = data['Password']
@@ -668,7 +690,7 @@ async def fetch_dm_data():
     users_without_ID = ''
     old_channel = 0
     sent_m = ''
-    if hours_ == int(data['Parcferme_dm1']):
+    if hours_ == int(dta['Parcferme_dm1']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -680,7 +702,7 @@ async def fetch_dm_data():
                 old_channel = int(tables['Parcferme_Channel'])
             try:
                 user = int(tables['DISCORDID'])
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(tables['Discord_User_ID']))
                 user_message_temp = 'Todavia no has enviado tu parcferme para la carrera de esta semana. Evita penalidad\n\n[Formulario Parc Ferme](https://gpesportsrd.com/parc)'
@@ -722,7 +744,7 @@ async def fetch_dm_data():
         
         conn.close()
 
-    elif hours_ == int(data['Parcferme_dm2']):
+    elif hours_ == int(dta['Parcferme_dm2']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -734,7 +756,7 @@ async def fetch_dm_data():
                 old_channel = int(tables['Parcferme_Channel'])
             try:
                 user = int(tables['DISCORDID'])
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(tables['Discord_User_ID']))
                 await user.send('TEXT HERE')
@@ -775,7 +797,7 @@ async def fetch_dm_data():
         
         conn.close()
 
-    elif hours_ == int(data['Parcferme_dm3']):
+    elif hours_ == int(dta['Parcferme_dm3']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -787,7 +809,7 @@ async def fetch_dm_data():
                 old_channel = int(tables['Parcferme_Channel'])
             try:
                 user = int(tables['DISCORDID'])
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(tables['Discord_User_ID']))
                 await user.send('TEXT HERE')
@@ -828,7 +850,7 @@ async def fetch_dm_data():
         
         conn.close()  
 
-    elif hours_ == int(data['Parcferme_dm4']):
+    elif hours_ == int(dta['Parcferme_dm4']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -840,7 +862,7 @@ async def fetch_dm_data():
                 old_channel = int(tables['Parcferme_Channel'])
             try:
                 user = int(tables['DISCORDID'])
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(tables['Discord_User_ID']))
                 await user.send('TEXT HERE')
@@ -880,7 +902,7 @@ async def fetch_dm_data():
                 continue
         
         conn.close()
-    elif hours_ == int(data['Parcferme_dm5']):
+    elif hours_ == int(dta['Parcferme_dm5']):
         conn = pymysql.connect(host=host,user=user,passwd=pass_,db=db_,port=port)
         
         cur = conn.cursor(pymysql.cursors.DictCursor)
@@ -892,7 +914,7 @@ async def fetch_dm_data():
                 old_channel = int(tables['Parcferme_Channel'])
             try:
                 user = int(tables['DISCORDID'])
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(tables['Discord_User_ID']))
                 await user.send('TEXT HERE')
@@ -934,7 +956,7 @@ async def fetch_dm_data():
         conn.close()
     
     if not users_without_ID == '':
-        channel = await bot.fetch_channel(data['Backend_Channel'])
+        channel = await bot.fetch_channel(dta['Backend_Channel'])
         embed = discord.Embed(color = discord.Color.red(),title = 'Users Without the USER ID',description =users_without_ID)
         await channel.send(embed = embed)
 
@@ -1011,6 +1033,9 @@ async def status(ctx):
 async def send_reminders():
 
     with open('Settings.json') as f:
+        dta = json.load(f)
+
+    with open('Creds.json') as f:
         data = json.load(f)
 
     host = data['Host']
@@ -1041,9 +1066,9 @@ async def send_reminders():
             except:
                 continue
 
-            channel = await bot.fetch_channel(data['Reminder_Channel'])
+            channel = await bot.fetch_channel(dta['Reminder_Channel'])
             try:
-                if user in data['Ignored_Users']:
+                if user in dta['Ignored_Users']:
                     continue
                 user = await bot.fetch_user(int(user))
                 await user.send(f"REcuerda enviar tu tiempo para la carrera del martes")
@@ -1053,7 +1078,7 @@ async def send_reminders():
             except Exception as e:
             
                 error = traceback.print_exc()
-                channel = await bot.fetch_channel(data['Backend_Channel'])
+                channel = await bot.fetch_channel(dta['Backend_Channel'])
                 await channel.send(error)
                 continue
 
