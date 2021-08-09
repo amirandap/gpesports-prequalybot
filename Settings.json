@@ -1,5 +1,5 @@
 {
-  "Prequali_Query": "SELECT TIMT.Fecha,TIMT.joomla_id, TIMT.Pista, MIN(TIMT.Tiempo) AS 'TIEMPO',TIMT.Usuario , FIELDS.value AS 'DISCORDID', ROUND.start_date, DATEDIFF(ROUND.start_date,CURRENT_DATE) FROM `vn2pj_timetrial` as TIMT INNER JOIN `vn2pj_tracks_projects_rounds` as ROUND ON TIMT.RoundID = ROUND.round_id  LEFT JOIN `vn2pj_tracks_projects` as COMP ON ROUND.project_id = COMP.id LEFT JOIN vn2pj_fields_values as FIELDS ON FIELDS.item_id = TIMT.`joomla_id` and FIELDS.field_id=13 WHERE DATEDIFF(CURRENT_DATE,ROUND.start_date) <6  and COMP.competition_id  = 3 GROUP BY TIMT.Usuario ORDER BY `TIEMPO` ASC LIMIT 10",
+  "Prequali_Query": "SELECT TIMT.Fecha,TIMT.joomla_id, TIMT.Pista, MIN(TIMT.Tiempo) AS 'TIEMPO',TIMT.Usuario , FIELDS.value AS 'DISCORDID', ROUND.start_date, DATEDIFF(ROUND.start_date,CURRENT_DATE) FROM `vn2pj_timetrial` as TIMT INNER JOIN `vn2pj_tracks_projects_rounds` as ROUND ON TIMT.RoundID = ROUND.round_id  LEFT JOIN `vn2pj_tracks_projects` as COMP ON ROUND.project_id = COMP.id LEFT JOIN vn2pj_fields_values as FIELDS ON FIELDS.item_id = TIMT.`joomla_id` and FIELDS.field_id=13 WHERE (abs(DATEDIFF(ROUND.start_date, CURRENT_TIMESTAMP))<6)  and COMP.competition_id  = 3 GROUP BY TIMT.Usuario ORDER BY `TIEMPO` ASC LIMIT 10",
   "Prequali_Assign_Hours": 24,
   "Prequali_Remove_Hours": 16,
   "Backend_Channel": 699619166533189823,
