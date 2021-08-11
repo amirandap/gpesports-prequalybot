@@ -156,13 +156,15 @@ async def prequali(ctx,val:str = None,channel:discord.TextChannel = None):
     with open('Creds.json') as f:
         data = json.load(f)
        
-    
+    with open('Settings.json') as f:
+        dta = json.load(f)
+
     if not val and not channel:
         host = data['Host']
         user = data['User']
         pass_ = data['Password']
         db_ = data['Database']
-        query_ = data['Prequali_Query']
+        query_ = dta['Prequali_Query']
 
         port = data['Port']
         
@@ -437,7 +439,7 @@ async def fetch_role_data():
     user = data['User']
     pass_ = data['Password']
     db_ = data['Database']
-    query_ = data['Query2']
+    query_ = dta['Prequali_Query']
     port = data['Port']
 
     if Start_Date_Temp == '':
@@ -576,15 +578,14 @@ async def parcferme(ctx,val:str = None):
     num2 = 1
     old_channel = 0
     sent_m = ''
-    for tables in cur.fetchall():      
+    for tables in cur.fetchall():    
         track_name = tables['Pista']
         channel = await bot.fetch_channel(int(tables['Discord Channel ID']))
         if num == 1:
             old_channel = int(tables['Discord Channel ID'])
-        else:
-            old_channel = int(tables['Discord Channel ID'])
 
         try:
+
             user_id = int(tables['Discord_User_ID'])
             if user_id in dta['Ignored_Users']:
                 continue
@@ -610,7 +611,6 @@ async def parcferme(ctx,val:str = None):
             num += 1
 
         except Exception as e:
-  
             users_without_ID += f"**{num2}:** {tables['nickname']}\n"
             if old_channel == channel.id:
                 msg += f"• {tables['nickname']}\n" 
@@ -629,7 +629,7 @@ async def parcferme(ctx,val:str = None):
             num2 += 1
             continue
     
-    if sent_m == '' and not msg == '':
+    if not sent_m == '' and not msg == '':
         if sent_m != msg:
             channel = await bot.fetch_channel(int(old_channel))
             embed = discord.Embed(color = discord.Color.red(),title = f'Parc Ferme Pendiente {track_name}',
@@ -1120,7 +1120,7 @@ async def on_command_error(ctx,error):
         await ctx.send(embed=embed)
         await ctx.message.delete()
 
-with open('Settings.json') as f:
+with open('Creds.json') as f:
     dd = json.load(f)
 
 TOKEN = dd['Token']
