@@ -34,10 +34,10 @@ async def on_ready():
         pass
     
     # COMMENTED OUT FOR TESTING PURPOSES, ENABLE THESE WHEN YOU ARE GOING FOR LIVE
-    fetch_role_data.start()
-    fetch_dm_data.start()
+    #fetch_role_data.start()
+    #fetch_dm_data.start()
     uptime_calc.start()
-    send_reminders.start()
+    #send_reminders.start()
 
 running = 'TRUE'
 
@@ -578,6 +578,7 @@ async def parcferme(ctx,val:str = None):
     num2 = 1
     old_channel = 0
     sent_m = ''
+    usrs = []
     for tables in cur.fetchall():    
         track_name = tables['Pista']
         channel = await bot.fetch_channel(int(tables['Discord Channel ID']))
@@ -592,17 +593,17 @@ async def parcferme(ctx,val:str = None):
             user = await bot.fetch_user(int(tables['Discord_User_ID']))
             if old_channel == channel.id:
                 msg += f"• {user.mention} - {tables['nickname']}\n" 
+                if val is None:
+                    user_message_temp = 'Todavia no has enviado tu parcferme para la carrera de esta semana. Evita penalidad\n\n[Formulario Parc Ferme](https://gpesportsrd.com/parc)'
+                    embed2 = discord.Embed(color = discord.Color.red(),description = user_message_temp)
+                    print('DM---SENT')
+                    await user.send(embed = embed2)
             else:
                 channel = await bot.fetch_channel(int(old_channel))
                 embed = discord.Embed(color = discord.Color.red(),title = f'Parc Ferme Pendiente {track_name}',
                 description = msg)
 
                 await channel.send(embed = embed)
-                if val is None:
-                    user_message_temp = 'Todavia no has enviado tu parcferme para la carrera de esta semana. Evita penalidad\n\n[Formulario Parc Ferme](https://gpesportsrd.com/parc)'
-                    embed2 = discord.Embed(color = discord.Color.red(),description = user_message_temp)
-                    await user.send(embed = embed2)
-
                 sent_m = msg
                 msg = ''
                 msg += f"• {user.mention}\n" 
@@ -611,6 +612,7 @@ async def parcferme(ctx,val:str = None):
             num += 1
 
         except Exception as e:
+            print(e)
             users_without_ID += f"**{num2}:** {tables['nickname']}\n"
             if old_channel == channel.id:
                 msg += f"• {tables['nickname']}\n" 
