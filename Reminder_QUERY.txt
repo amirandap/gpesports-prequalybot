@@ -2,6 +2,7 @@ select `y`.`Usuario`, `y`.`FechaMasReciente`, `y`.`CANT`, `y`.`joomla_id`, `y`.`
 (select *,DATEDIFF(CURRENT_DATE,FechaMasReciente) as antiguedad from 
 		(select COUNT(`vn2pj_timetrial`.`joomla_id`) as CANT,MAX(Fecha) as FechaMasReciente, `vn2pj_timetrial`.`Usuario` as Usuario,`vn2pj_timetrial`.`joomla_id` as joomla_id, `vn2pj_timetrial`.`id` as id from `vn2pj_timetrial` group by `vn2pj_timetrial`.`joomla_id`) as x) as y
 inner join vn2pj_fields_values on vn2pj_fields_values.item_id=joomla_id
-    and field_id=13
+    and field_id=13 and `y`.`antiguedad`<45
 
-		where antiguedad >= 3  and `y`.`joomla_id` not in (861,902)
+		where antiguedad >= 3  and `y`.`joomla_id` not in (861,902,820)  
+ORDER BY `y`.`antiguedad` ASC
