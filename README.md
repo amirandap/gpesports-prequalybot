@@ -25,4 +25,4 @@ Backend
 1. Users with no discord ID: if any error is thrown because a user doesnt have a discordID send to backendchannel
 2. Backendchannel: Add in config a channel to publish bot internal stuff, errors, confirmations, wte
 3. $status command: uptime, current time, amount of current entries in list, 
-4. When sending batch DMs, post users who where sent a DM to backendchannel
+4. When sending batch DMs, post users who where sent a DM to backendchannel 
